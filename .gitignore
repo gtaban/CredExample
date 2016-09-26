@@ -1,0 +1,6 @@
+Packages
+.build
+build
+Packages
+*.pkg
+*.DS_Store
