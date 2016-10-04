@@ -1,4 +1,5 @@
 import Kitura
+//import Credentials
 
 import LoggerAPI
 import HeliumLogger
@@ -10,8 +11,15 @@ let router = Router()
 Log.logger = HeliumLogger()
 
 
+/*
+// Setting up SSL configuration
+//        let myCertChainFile = "/Users/gtaban/Developer/SecureService/SSLExample/Creds/Self-Signed/cert.pfx"
+let myCertChainFile = "/Users/gtaban/Developer/SecureService/SSLExample/Creds/tmp/cert.pfx"
+var mySSLConfigSelfSigned = SSLConfig(withChainFilePath: myCertChainFile, withPassword:"password", usingSelfSignedCerts:true)
+*/
 
-
+// /private/basic/hello with basic authentication
+setupBasicAuth()
 
 // A custom Not found handler
 router.all { request, response, next in
@@ -29,9 +37,9 @@ router.all { request, response, next in
     next()
 }
 
+
 // Add HTTP Server to listen on port 8090
 Kitura.addHTTPServer(onPort: 8090, with: router)
-
-// start the framework - the servers added until now will start listening
+//Kitura.addHTTPServer(onPort: 8090, with: router, withSSL: mySSLConfigSelfSigned)
 Kitura.run()
 
