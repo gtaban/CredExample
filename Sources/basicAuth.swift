@@ -27,26 +27,23 @@ func setupBasicAuth() {
     let users = ["Alice" : "123", "Bob" : "456"]
 
     // setup basic credentials
-    // include a userProfileLoader in the constructor that is the callback to be used when
+    // include a verifyPassword in the constructor that is the callback to be used when
     // checking the username, password combination. 
-    // Callback returns a user profile and the stored password that authentication 
-    // should be validated against.
-    
-
-    
-    let basicCredentials = CredentialsHTTPBasic( userProfileLoader: { userId, callback in
+    // Callback returns a user profile if (username,password) is valid. Else, nil.
+    let basicCredentials = CredentialsHTTPBasic( verifyPassword: { userId, password, callback in
         
         Log.verbose("userProfileLoader: checking");
         if let storedPassword = users[userId] {
-
+            
             Log.verbose("userProfileLoader: match user");
-            callback(UserProfile(id: userId, displayName: userId, provider: "HTTPBasic"), storedPassword)
+            if (storedPassword == password) {
+                callback(UserProfile(id: userId, displayName: userId, provider: "HTTPBasic-Kitura"))
+            }
         }
-        else {
-            callback(nil, nil)
-        }
-    })
-    
+        // if userID or password do not match
+        callback(nil)
+    }, realm: "Gelareh-Realm")
+
     // create credential object and register basic credential plugin
     let credentials = Credentials()
     credentials.register(plugin: basicCredentials)
@@ -69,7 +66,6 @@ func setupBasicAuth() {
                             "Greetings " +  userProfile.displayName + "! You are logged in with " + userProfile.provider + ". This is private!<br>" +
                         "</body></html>\n\n").end()
                     
-                    
                     next()
                     return
                 }
@@ -79,10 +75,8 @@ func setupBasicAuth() {
                     "<!DOCTYPE html><html><body>" +
                         "You are not authorized to view this page" +
                     "</body></html>\n\n").end()
-
             }
             catch {}
             next()
     })
-    
 }
