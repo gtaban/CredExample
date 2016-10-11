@@ -40,18 +40,17 @@ public class EncodedPassword {
     ///
     public init(withUserId userID: String, withPassword password: String, usingSalt saltFromUser: [UInt8]? = nil, encoding: SecureEncoding) throws {
         
-        // hashed password and salt length
-        userId = userID
-        encodingType = encoding
- 
+        // Define our constants
         let mySaltLength:UInt = 32
         let myRoundsOfPBKDF: UInt32 = 2
         
+        let mySalt: [UInt8] = try saltFromUser ?? Random.generate(byteCount: Int(mySaltLength))
+        
+        salt = mySalt
         saltLength = mySaltLength
         roundsOfPBKDF = myRoundsOfPBKDF
-
-        let mySalt: [UInt8] = try saltFromUser ?? Random.generate(byteCount: Int(mySaltLength))
-        salt = mySalt
+        userId = userID
+        encodingType = encoding
         
         switch (encoding) {
             case .PBKDF2:
@@ -68,7 +67,7 @@ public class EncodedPassword {
     ///
     public func verifyPassword(withPassword testPassword: String) throws -> Bool{
         
-        let testPassword_encoded: [UInt8];
+        let testPassword_encoded: [UInt8]
         
         switch (encodingType) {
             case .PBKDF2:
@@ -77,8 +76,6 @@ public class EncodedPassword {
                 throw EncodedPasswordError.invalidEncoding
         }
 
-       // let testPassword_encoded = PBKDF.deriveKey(fromPassword: testPassword, salt: salt, prf: .sha512, rounds: roundsOfPBKDF, derivedKeyLength: saltLength)
-        
         return ( encodedPassword == testPassword_encoded)
     }
     
