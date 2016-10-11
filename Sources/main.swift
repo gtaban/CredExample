@@ -57,7 +57,6 @@ router.all { request, response, next in
 
 
 // Add HTTP Server to listen on port 8090
-//Kitura.addHTTPServer(onPort: 8090, with: router, withSSL: mySSLConfig)
-Kitura.addHTTPServer(onPort: 8090, with: router)
+Kitura.addHTTPServer(onPort: 8090, with: router, withSSL: mySSLConfig)
 Kitura.run()
 
